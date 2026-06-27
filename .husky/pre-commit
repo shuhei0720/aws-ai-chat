@@ -1,0 +1,5 @@
+# git-secrets によるシークレットのチェックを実行
+git secrets --pre_commit_hook -- "$@"
+
+# lint-staged によるリントとフォーマットを実行
+npx lint-staged
