@@ -1,4 +1,5 @@
 import { FaArrowUp } from "react-icons/fa";
+import { useState } from "react";
 
 export default function ChatInput() {
   const models = [
@@ -16,6 +17,9 @@ export default function ChatInput() {
     },
   ];
 
+  const [message, setMessage] = useState("");
+  const [selectedModel, setSelectedModel] = useState(models[0].id);
+
   return (
     <form>
       <div className="flex flex-col justify-between gap-4 rounded-2xl border border-gray-200 p-4">
@@ -23,10 +27,17 @@ export default function ChatInput() {
           name="message"
           className="field-sizing-content max-h-80 w-full resize-none overflow-y-auto border-none break-words outline-none"
           placeholder="質問を入力してください"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
         />
         <div className="flex justify-end gap-2">
           <div className="flex items-center justify-center rounded-md text-sm">
-            <select name="model" className="w-full rounded-md p-2">
+            <select
+              name="model"
+              value={selectedModel}
+              onChange={(e) => setSelectedModel(e.target.value)}
+              className="w-full rounded-md p-2"
+            >
               {models.map((model) => (
                 <option key={model.id} value={model.id}>
                   {model.name}
@@ -34,7 +45,11 @@ export default function ChatInput() {
               ))}
             </select>
           </div>
-          <button className="flex items-center justify-center rounded-md bg-emerald-600 p-2 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:hover:bg-emerald-600">
+          <button
+            type="submit"
+            disabled={message.trim() === ""}
+            className="flex items-center justify-center rounded-md bg-emerald-600 p-2 text-white hover:bg-emerald-700 disabled:opacity-50 disabled:hover:bg-emerald-600"
+          >
             <FaArrowUp className="h-5 w-5" />
           </button>
         </div>
