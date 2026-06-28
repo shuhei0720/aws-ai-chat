@@ -1,7 +1,20 @@
 import { FaArrowUp } from "react-icons/fa";
-import { useState } from "react";
+import { type FormEvent, useState } from "react";
 
-export default function ChatInput() {
+interface ChatInputProps {
+  sendMessage: (message: string, model: string) => void;
+}
+
+export default function ChatInput({ sendMessage }: ChatInputProps) {
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    if (!message.trim() || !selectedModel) {
+      return;
+    }
+
+    sendMessage(message, selectedModel);
+    setMessage("");
+  };
   const models = [
     {
       id: "global.anthoropic.claude-sonnet-4-5-20250929-v1:0",
@@ -21,7 +34,7 @@ export default function ChatInput() {
   const [selectedModel, setSelectedModel] = useState(models[0].id);
 
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div className="flex flex-col justify-between gap-4 rounded-2xl border border-gray-200 p-4">
         <textarea
           name="message"
