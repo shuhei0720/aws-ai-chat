@@ -1,10 +1,11 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vitest/config";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   // Vitestの設定を追加
   test: {
     globals: true, // describe, it, expect などをグローバルで使用可能に
