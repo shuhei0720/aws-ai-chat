@@ -1,13 +1,16 @@
-import { useParams } from "react-router";
+import { useParams, useLocation } from "react-router";
 import { useEffect, useState, useRef } from "react";
 import type { Conversation } from "../types/chat";
 import { sampleConversations } from "../sampleData";
 import MessageList from "../components/ui/MessageList";
+import ChatInput from "../components/ui/ChatInput";
 
 export default function ChatConversation() {
   const { conversationId } = useParams();
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const { state: initChatDetail } = location;
 
   useEffect(() => {
     // TODO 実際のアプリではAPIからデータを取得する
@@ -35,6 +38,36 @@ export default function ChatConversation() {
     );
   }
 
+  const sendMessage = (message: string) => {
+    const conversationIndex = sampleConversations.findIndex(
+      (conversation) => conversation.id === conversationId,
+    );
+    if (conversationIndex === -1) {
+      return;
+    }
+    const updatedConversation = {
+      ...sampleConversations[conversationIndex],
+      messages: [
+        ...sampleConversations[conversationIndex].messages,
+        {
+          id: `message-${self.crypto.randomUUID()}`,
+          role: "user" as const,
+          content: message,
+          timestamp: new Date(),
+        },
+        {
+          id: `message-${self.crypto.randomUUID()}`,
+          role: "assistant" as const,
+          content: "AIのダミーメッセージです",
+          timestamp: new Date(),
+        },
+      ],
+      updatedAt: new Date(),
+    };
+    sampleConversations[conversationIndex] = updatedConversation;
+    setConversation(updatedConversation);
+  };
+
   return (
     <div className="flex h-screen flex-col">
       <div className="sticky top-0 z-10 border-b border-gray-200 bg-white p-4">
@@ -45,6 +78,12 @@ export default function ChatConversation() {
           <MessageList messages={conversation.messages} />
           <div ref={messagesEndRef} />
         </div>
+      </div>
+      <div className="mx-auto w-3xl bg-white px-4 py-3">
+        <ChatInput
+          sendMessage={sendMessage}
+          initialModel={initChatDetail?.model}
+        />
       </div>
     </div>
   );
