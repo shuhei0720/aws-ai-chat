@@ -1,6 +1,18 @@
 @import "tailwindcss";
+@import "@aws-amplify/ui-react/styles.css";
 
 @theme {
   --color-cream-100: #f5f0e5;
   --color-cream-150: #efe9dc;
+}
+
+[data-amplify-authentication] {
+  height: 100vh;
+}
+
+:root,
+[data-amplify-theme] {
+  --amplify-colors-primary-80: oklch(59.6% 0.145 163.225); /* emerald-600 */
+  --amplify-colors-primary-90: oklch(50.8% 0.118 165.612); /* emerald-700 */
+  --amplify-colors-border-focus: oklch(50.8% 0.118 165.612);
 }
