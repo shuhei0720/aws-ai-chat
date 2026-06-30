@@ -1,10 +1,5 @@
-import { Handler } from "aws-lambda";
+import type { Schema } from "../../data/resource";
 
-export const handler: Handler = async () => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: "Hello, world!",
-    }),
-  };
+export const handler: Schema["HelloWorld"]["functionHandler"] = async () => {
+  return "Hello, world!";
 };
