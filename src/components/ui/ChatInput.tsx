@@ -21,11 +21,11 @@ export default function ChatInput({
   };
   const models = [
     {
-      id: "global.anthoropic.claude-sonnet-4-5-20250929-v1:0",
+      id: "global.anthropic.claude-haiku-4-5-20251001-v1:0",
       name: "Claude 4.5 Haiku v1",
     },
     {
-      id: "global.anthoropic.claude-sonnet-4-5-20250929-v1:0",
+      id: "global.anthropic.claude-sonnet-4-5-20250929-v1:0",
       name: "Claude Sonnet 4.5 v1",
     },
     {

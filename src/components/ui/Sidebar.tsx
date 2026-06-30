@@ -35,7 +35,7 @@ export default function Sidebar() {
           {conversations.map((chat) => (
             <li key={chat.id}>
               <Link
-                to={`chat/${chat.id}`}
+                to={`/chat/${chat.id}`}
                 className={`mx-4 my-2 block truncate rounded-md px-4 py-2 text-sm text-nowrap ${
                   conversationId === chat.id
                     ? "bg-cream-100 font-medium"

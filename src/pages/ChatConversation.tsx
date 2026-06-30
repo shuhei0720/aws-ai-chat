@@ -1,9 +1,11 @@
 import { useParams, useLocation } from "react-router";
 import { useEffect, useState, useRef } from "react";
-import type { Conversation } from "../types/chat";
+import type { Conversation, Message } from "../types/chat";
 import { sampleConversations } from "../sampleData";
 import MessageList from "../components/ui/MessageList";
 import ChatInput from "../components/ui/ChatInput";
+import { callBedrockChat } from "../api/bedrock";
+import { createChatTitle } from "../utils";
 
 export default function ChatConversation() {
   const { conversationId } = useParams();
@@ -11,16 +13,58 @@ export default function ChatConversation() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const { state: initChatDetail } = location;
+  const initRenderRef = useRef(true);
+
+  const getAIResponse = async (message: string, model: string) => {
+    const aiResponse = await callBedrockChat(message, model);
+
+    const newAssistantMessage: Message = {
+      id: `message-${self.crypto.randomUUID()}`,
+      role: "assistant",
+      content: aiResponse || "AIからの応答がありません",
+      timestamp: new Date(),
+    };
+
+    setConversation((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        messages: [...prev.messages, newAssistantMessage],
+      };
+    });
+  };
 
   useEffect(() => {
-    // TODO 実際のアプリではAPIからデータを取得する
-    const foundConversation = sampleConversations.find(
-      (c) => c.id === conversationId,
-    );
-    if (foundConversation) {
-      setConversation(foundConversation);
+    if (!conversationId) return;
+
+    if (initChatDetail) {
+      if (!initRenderRef.current) return;
+      initRenderRef.current = false;
+      const { message, model } = initChatDetail;
+      setConversation({
+        id: conversationId,
+        title: createChatTitle(message),
+        messages: [
+          {
+            id: `message-${self.crypto.randomUUID()}`,
+            role: "user",
+            content: message,
+            timestamp: new Date(),
+          },
+        ],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      getAIResponse(message, model);
+    } else {
+      // TODO 実際のアプリではAPIからデータを取得する
+      const foundConversation = sampleConversations.find(
+        (c) => c.id === conversationId,
+      );
+      setConversation(foundConversation || null);
     }
-  }, [conversationId]);
+  }, [conversationId, initChatDetail]);
 
   useEffect(() => {
     if (conversation?.messages.length) {
@@ -38,34 +82,23 @@ export default function ChatConversation() {
     );
   }
 
-  const sendMessage = (message: string) => {
-    const conversationIndex = sampleConversations.findIndex(
-      (conversation) => conversation.id === conversationId,
-    );
-    if (conversationIndex === -1) {
-      return;
-    }
-    const updatedConversation = {
-      ...sampleConversations[conversationIndex],
-      messages: [
-        ...sampleConversations[conversationIndex].messages,
-        {
-          id: `message-${self.crypto.randomUUID()}`,
-          role: "user" as const,
-          content: message,
-          timestamp: new Date(),
-        },
-        {
-          id: `message-${self.crypto.randomUUID()}`,
-          role: "assistant" as const,
-          content: "AIのダミーメッセージです",
-          timestamp: new Date(),
-        },
-      ],
-      updatedAt: new Date(),
+  const sendMessage = async (message: string, model: string) => {
+    const newUserMessage: Message = {
+      id: `message-${self.crypto.randomUUID()}`,
+      role: "user",
+      content: message,
+      timestamp: new Date(),
     };
-    sampleConversations[conversationIndex] = updatedConversation;
-    setConversation(updatedConversation);
+
+    setConversation((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        messages: [...prev.messages, newUserMessage],
+      };
+    });
+
+    await getAIResponse(message, model);
   };
 
   return (
