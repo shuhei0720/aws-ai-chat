@@ -19,7 +19,7 @@ backend.bedrockChatFunction.resources.lambda.addToRolePolicy(
     resources: [
       "arn:aws:bedrock:*::foundation-model/*",
       "arn:aws:bedrock:*:*:inference-profile/*",
-      "arn:aws:bedrock:*:*:application-interface-profile/*",
+      "arn:aws:bedrock:*:*:application-inference-profile/*",
     ],
   }),
 );
