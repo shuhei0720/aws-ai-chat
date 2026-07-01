@@ -162,7 +162,7 @@ async function saveMessage(
     await docClient.send(putCommand);
     console.log("メッセージを保存しました:", conversationId, timestamp);
   } catch (error) {
-    console.log("メッセージの保存でエラーが発生しました:", error);
+    console.error("メッセージの保存でエラーが発生しました:", error);
     throw new Error(GENERIC_ERROR_MESSAGE);
   }
 }
