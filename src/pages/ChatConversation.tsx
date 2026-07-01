@@ -14,8 +14,10 @@ export default function ChatConversation() {
   const location = useLocation();
   const { state: initChatDetail } = location;
   const initRenderRef = useRef(true);
+  const [isLoadingAIResponse, setIsLoadingAIResponse] = useState(false);
 
   const getAIResponse = async (message: string, model: string) => {
+    setIsLoadingAIResponse(true);
     const aiResponse = await callBedrockChat(message, model);
 
     const newAssistantMessage: Message = {
@@ -32,6 +34,8 @@ export default function ChatConversation() {
         messages: [...prev.messages, newAssistantMessage],
       };
     });
+
+    setIsLoadingAIResponse(false);
   };
 
   useEffect(() => {
@@ -109,6 +113,12 @@ export default function ChatConversation() {
       <div className="flex flex-1 justify-center overflow-y-auto bg-white">
         <div className="w-3xl">
           <MessageList messages={conversation.messages} />
+          {/* ローディングインジケーターの表示を追加 */}
+          {isLoadingAIResponse && (
+            <div className="px-6">
+              <div className="border-cream-500 h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" />
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -116,6 +126,7 @@ export default function ChatConversation() {
         <ChatInput
           sendMessage={sendMessage}
           initialModel={initChatDetail?.model}
+          disabled={isLoadingAIResponse}
         />
       </div>
     </div>
