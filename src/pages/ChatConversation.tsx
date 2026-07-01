@@ -18,24 +18,37 @@ export default function ChatConversation() {
 
   const getAIResponse = async (message: string, model: string) => {
     setIsLoadingAIResponse(true);
-    const aiResponse = await callBedrockChat(message, model);
+    let newAssistantMessage: Message;
+    try {
+      const aiResponse = await callBedrockChat(message, model);
 
-    const newAssistantMessage: Message = {
-      id: `message-${self.crypto.randomUUID()}`,
-      role: "assistant",
-      content: aiResponse || "AIからの応答がありません",
-      timestamp: new Date(),
-    };
-
-    setConversation((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        messages: [...prev.messages, newAssistantMessage],
+      newAssistantMessage = {
+        id: `message-${self.crypto.randomUUID()}`,
+        role: "assistant",
+        content: aiResponse || "AIからの応答がありません",
+        timestamp: new Date(),
       };
-    });
-
-    setIsLoadingAIResponse(false);
+    } catch (error) {
+      console.error(
+        "AI応答の取得に失敗しました。後ほど再試行してください。",
+        error,
+      );
+      newAssistantMessage = {
+        id: `message-${self.crypto.randomUUID()}`,
+        role: "assistant",
+        content: "AIからの応答の取得に失敗しました。後ほど再試行してください。",
+        timestamp: new Date(),
+      };
+    } finally {
+      setConversation((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          messages: [...prev.messages, newAssistantMessage],
+        };
+      });
+      setIsLoadingAIResponse(false);
+    }
   };
 
   useEffect(() => {
